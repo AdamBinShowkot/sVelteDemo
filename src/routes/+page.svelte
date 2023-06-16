@@ -77,21 +77,37 @@
 
   // handle for registration submit
   const handleOnSubmit=()=>{
-    let registarData=JSON.stringify(registarInfo);
 
-    // write api code here
+    let demoUser={
+      username:registarInfo.email,
+      password:"123456"
+    }
+
+    sessionStorage.setItem('user',JSON.stringify(demoUser));
+    sessionStorage.setItem("registerInfo",JSON.stringify(registarInfo))
+    cart = JSON.parse(sessionStorage.getItem("cart"));
+
     isLoggedIn=true
     isRegModalOpen=false;
   }
 
   // handle for login submit
-  const onLogin=()=>{
-    let loginData=JSON.stringify(loginInfo);
+  const onLogin=()=>{    
+   
+    if(loginInfo.email && loginInfo.password==="123456"){
+      let demoLoginObj={
+        email:loginInfo.email,
+        password:loginInfo.password
+      }
 
-
-    // write api code here...
-    isLoggedIn=true;
-    isLoginModalOpen=false
+      sessionStorage.setItem('user',JSON.stringify(demoLoginObj))
+      cart = JSON.parse(sessionStorage.getItem("cart"));
+      
+      isLoggedIn=true;
+      isLoginModalOpen=false
+    }else{
+      alert("Wrong Password")
+    }
   }
 
   function addItem(item) {
@@ -177,9 +193,10 @@
 
   // Similiar to componentDidMount() on react.
   onMount(() => {
-    if (sessionStorage.getItem("cart")) {
+    if (sessionStorage.getItem("cart") && sessionStorage.getItem("user")) {
       //get cart data & parse to array
       cart = JSON.parse(sessionStorage.getItem("cart"));
+      isLoggedIn=true;
     }
   });
 
@@ -204,7 +221,7 @@
           <h2 class="text-2xl font-bold">Products</h2>
         </div>
         {#if !isLoggedIn}
-        <div class="flex justify-end" style="width:50%">
+        <div class="flex item-baseline justify-end" style="width:50%">
           <a 
           class="text-sm underline hover:cursor-pointer text-blue-400 mr-2"  
           on:click={() => isLoginModalOpen=true}

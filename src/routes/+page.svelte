@@ -88,6 +88,8 @@
   const onLogin=()=>{
     let loginData=JSON.stringify(loginInfo);
 
+
+    // write api code here...
     isLoggedIn=true;
     isLoginModalOpen=false
   }

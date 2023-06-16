@@ -5,6 +5,7 @@
   export let data;
 
   let cart = [];
+  let isLoggedIn=data.isLoggedIn;
   let isCheckout = false;
   let isRegModalOpen=false;
   let isLoginModalOpen=false;
@@ -74,14 +75,21 @@
     loginInfo=infos;
   }
 
-  // handle for submit
+  // handle for registration submit
   const handleOnSubmit=()=>{
-    console.log(registarInfo)
+    let registarData=JSON.stringify(registarInfo);
+
+    // write api code here
+    isLoggedIn=true
+    isRegModalOpen=false;
   }
 
   // handle for login submit
   const onLogin=()=>{
-    console.log(loginInfo)
+    let loginData=JSON.stringify(loginInfo);
+
+    isLoggedIn=true;
+    isLoginModalOpen=false
   }
 
   function addItem(item) {
@@ -189,93 +197,97 @@
 
 <section class="flex flex-wrap">
   <div class="lg:w-2/3 w-full p-2">
-    <h2 class="text-2xl font-bold mb-8">Products</h2>
-    <ul class="">
-      {#each data.items as item}
-        <li class="flex flex-wrap border p-2 mb-2 items-center">
-          <div class="flex flex-column items-center w-full">
-            <div class="lg:w-2/5 w-full p-2">
-              <h2 class="text-md font-bold">{item.title}</h2>
-              <h3>${item.price}</h3>
-            </div>
-            <div class="lg:w-2/5 w-full p-2">
-              {#if item.extra}
-                {#if item.extra.field == "text"}
-                  <div>
-                    <input
-                      type="text"
-                      aria-label={item.extra.label}
-                      placeholder={item.extra.label}
-                      on:change={(e) => {
-                        item.selected = e.target.value;
-                        item.description = `${item.extra.label} - ${e.target.value}`;
-                      }}
-                    />
-                  </div>
+    <div class="flex item-baseline mb-8" style="width:100%;overflow:hidden">
+        <div class="" style="width:50%">
+          <h2 class="text-2xl font-bold">Products</h2>
+        </div>
+        {#if !isLoggedIn}
+        <div class="flex justify-end" style="width:50%">
+          <a 
+          class="text-sm underline hover:cursor-pointer text-blue-400 mr-2"  
+          on:click={() => isLoginModalOpen=true}
+          href={null}
+          >
+            Login
+          </a>
+          <a 
+          class="text-sm underline hover:cursor-pointer text-blue-400"
+          on:click={() => isRegModalOpen=true}
+          href={null}
+          >
+            Register
+          </a>
+        </div>
+        {/if}
+    </div>
+    <div>
+      <ul class="">
+        {#each data.items as item}
+          <li class="flex flex-wrap border p-2 mb-2 items-center">
+            <div class="flex flex-column items-center w-full">
+              <div class="lg:w-2/5 w-full p-2">
+                <h2 class="text-md font-bold">{item.title}</h2>
+                <h3>${item.price}</h3>
+              </div>
+              <div class="lg:w-2/5 w-full p-2">
+                {#if item.extra}
+                  {#if item.extra.field == "text"}
+                    <div>
+                      <input
+                        type="text"
+                        aria-label={item.extra.label}
+                        placeholder={item.extra.label}
+                        on:change={(e) => {
+                          item.selected = e.target.value;
+                          item.description = `${item.extra.label} - ${e.target.value}`;
+                        }}
+                      />
+                    </div>
+                  {/if}
+                  {#if item.extra.field == "price"}
+                    <div>
+                      <label for={item.extra.label}>{item.extra.label}</label>
+                      <select
+                        name={item.extra.label}
+                        on:change={(e) => {
+                          //window.selected = e.target;
+                          item.price = Number(e.target.value);
+                          item.selected = e.target.value;
+                          item.description = `${item.extra.label} - ${
+                            e.target.options[e.target.selectedIndex].text
+                          }`;
+                        }}
+                      >
+                        <option value="">Select Option</option>
+                        {#each item.extra.value as p}
+                          <option value={p.price}>{p.title}</option>
+                        {/each}
+                      </select>
+                    </div>
+                  {/if}
                 {/if}
-                {#if item.extra.field == "price"}
-                  <div>
-                    <label for={item.extra.label}>{item.extra.label}</label>
-                    <select
-                      name={item.extra.label}
-                      on:change={(e) => {
-                        //window.selected = e.target;
-                        item.price = Number(e.target.value);
-                        item.selected = e.target.value;
-                        item.description = `${item.extra.label} - ${
-                          e.target.options[e.target.selectedIndex].text
-                        }`;
-                      }}
-                    >
-                      <option value="">Select Option</option>
-                      {#each item.extra.value as p}
-                        <option value={p.price}>{p.title}</option>
-                      {/each}
-                    </select>
-                  </div>
-                {/if}
-              {/if}
+              </div>
+              <div class="lg:w-1/5 w-full p-2 flex justify-end">
+                <!-- <button
+                  class="border-2 border-blue-50 bg-blue"
+                  on:click={() => addItem(item)}
+                  disabled={!item.selected}
+                >
+                  Add to Cart
+                </button> -->
+                <button
+                  class="border-2 border-blue-50 bg-blue"
+                  on:click={() => addItem(item)}
+                  disabled={isLoggedIn?false:true}
+                >
+                  Add to Cart
+                </button>
+              </div>
             </div>
-            <div class="lg:w-1/5 w-full p-2 flex justify-end">
-              <!-- <button
-                class="border-2 border-blue-50 bg-blue"
-                on:click={() => addItem(item)}
-                disabled={!item.selected}
-              >
-                Add to Cart
-              </button> -->
-              <button
-                class="border-2 border-blue-50 bg-blue"
-                on:click={() => addItem(item)}
-                disabled={item.token?false:true}
-              >
-                Add to Cart
-              </button>
-            </div>
-          </div>
-          {#if !item.token}
-          <div class="flex justify-center w-full">
-            <button
-            class="border-2 border-blue-50 bg-blue"
-            on:click={() => isLoginModalOpen=true}
-            >
-              Login
-            </button>
-
-            <button
-            class="border-2 border-blue-50 bg-blue"
-            on:click={() => isRegModalOpen=true}
-            >
-              Registration
-            </button>
-            <!-- {#if item.info}
-              {@html item.info}
-            {/if} -->
-          </div>
-          {/if}
-        </li>
-      {/each}
-    </ul>
+          </li>
+        {/each}
+      </ul>
+    </div>
   </div>
   <div class="lg:w-1/3 w-full p-2">
     <div class="cart-container">

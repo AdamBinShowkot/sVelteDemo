@@ -85,7 +85,11 @@
 
     sessionStorage.setItem('user',JSON.stringify(demoUser));
     sessionStorage.setItem("registerInfo",JSON.stringify(registarInfo))
-    cart = JSON.parse(sessionStorage.getItem("cart"));
+    let cartLists = JSON.parse(sessionStorage.getItem("cart"));
+
+    if(cartLists){
+      cart=cartLists
+    }
 
     isLoggedIn=true
     isRegModalOpen=false;
@@ -101,7 +105,11 @@
       }
 
       sessionStorage.setItem('user',JSON.stringify(demoLoginObj))
-      cart = JSON.parse(sessionStorage.getItem("cart"));
+      let cartLists = JSON.parse(sessionStorage.getItem("cart"));
+
+      if(cartLists){
+        cart=cartLists
+      }
       
       isLoggedIn=true;
       isLoginModalOpen=false
@@ -201,8 +209,8 @@
   });
 
 
-  // would be updated for another state & also render
-  $: itemTotal = cart.length;
+
+  $: itemTotal = cart.length?cart.length:0;
   $: total = cart.reduce((a, b) => a + b.price, 0);
 </script>
 
